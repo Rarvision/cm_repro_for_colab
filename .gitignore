@@ -24,6 +24,3 @@ env/
 # 系统文件
 .DS_Store
 Thumbs.db
-
-# Big File
-/data/jarvis22/dat_featurized_matminer.pkl
