@@ -10,7 +10,7 @@ import os
 import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestRegressor
 import xgboost as xgb
-from extra_funcs import load_data, get_split, get_scores_from_pred
+from extra_funcs import load_data, get_split, get_scores_from_pred, iterative_corr_prune
 
 # 实验配置
 dataset = 'jarvis22'
@@ -26,6 +26,17 @@ df, X, y = load_data(dataset, target)
 
 # 数据划分
 index_train, index_test = get_split(df, group_label, group_value)
+
+kept_cols, dropped_cols = iterative_corr_prune(
+    X.loc[index_train],
+    y.loc[index_train],      # 有监督保留策略；若做无监督就传 None
+    threshold=0.7,           # 你的阈值
+    method="spearman",       # 对材料数据更鲁棒；需要严格线性可用 "pearson"
+    min_var=0.0,
+    verbose=True,
+)
+
+
 X_train, y_train = X.loc[index_train], y.loc[index_train]
 X_test, y_test = X.loc[index_test], y.loc[index_test]
 

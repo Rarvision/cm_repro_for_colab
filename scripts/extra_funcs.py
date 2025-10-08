@@ -57,16 +57,16 @@ def load_data(dataset, target):
     X = df[matminer_features].astype(float)
     y = df[target]
 
-    # Remove highly correlated features
-    corr_threshold = 0.7
-    corr_matrix = X.corr().abs()
-    upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
-    to_drop = [column for column in upper.columns if any(upper[column] > corr_threshold)]
-    X = X.drop(columns=to_drop)
-    print(
-        f"Removed {len(to_drop)} highly correlated features (threshold={corr_threshold}). Remaining features: {len(X.columns)}")
-
-    # print(f"加载数据完成: {len(df)} 条记录，{len(matminer_features)} 个特征")
+    # # Remove highly correlated features
+    # corr_threshold = 0.7
+    # corr_matrix = X.corr().abs()
+    # upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
+    # to_drop = [column for column in upper.columns if any(upper[column] > corr_threshold)]
+    # X = X.drop(columns=to_drop)
+    # print(
+    #     f"Removed {len(to_drop)} highly correlated features (threshold={corr_threshold}). Remaining features: {len(X.columns)}")
+    #
+    # # print(f"加载数据完成: {len(df)} 条记录，{len(matminer_features)} 个特征")
     print(f"加载数据完成: {len(df)} 条记录，{len(X.columns)} 个特征")
     return df, X, y
 
@@ -133,3 +133,78 @@ def get_scores_from_pred(y_test, y_pred):
     spearman_r, spearman_p_value = spearmanr(y_test, y_pred)
     kendall_r, kendall_p_value = kendalltau(y_test, y_pred)
     return mad, std, maes, rmse, r2, pearson_r, pearson_p_value, spearman_r, spearman_p_value, kendall_r, kendall_p_value
+
+import numpy as np
+import pandas as pd
+
+def iterative_corr_prune(
+    X: pd.DataFrame,
+    y: pd.Series | None = None,
+    threshold: float = 0.7,
+    method: str = "pearson",
+    min_var: float = 0.0,
+    verbose: bool = True,
+):
+    """
+    迭代地按相关阈值去冗余特征。每次删掉一列并重算，直到没有 |corr| >= threshold 的对。
+    - 若提供 y：优先保留与 y 绝对相关更高的那列；
+    - 若不提供 y：删“平均相关更高”的那列（或方差更小的那列作为次级准则）。
+
+    返回：
+      kept_cols: 最终保留的特征名列表
+      dropped_cols: 被删除的特征名列表（按删除顺序）
+    """
+    X = X.copy()
+
+    # 0) 先去常数/近零方差列，避免 NaN 相关/数值问题
+    if min_var > 0:
+        low_var = X.var().loc[lambda s: s <= min_var].index.tolist()
+    else:
+        low_var = X.columns[X.nunique() <= 1].tolist()
+    dropped = list(low_var)
+    X.drop(columns=low_var, inplace=True, errors="ignore")
+    if verbose and low_var:
+        print(f"[init] drop constant/low-var: {len(low_var)}")
+
+    while True:
+        if X.shape[1] <= 1:
+            break
+
+        corr = X.corr(method=method).abs()
+        np.fill_diagonal(corr.values, 0.0)  # 忽略对角线
+        # 找到当前最大相关的一对
+        i, j = divmod(np.nanargmax(corr.values), corr.shape[1])
+        max_corr = corr.values[i, j]
+
+        if np.isnan(max_corr) or max_corr < threshold:
+            break  # 收敛
+
+        col_i, col_j = corr.index[i], corr.columns[j]
+
+        # 选择删谁
+        if y is not None:
+            ci = abs(pd.Series(X[col_i]).corr(y))
+            cj = abs(pd.Series(X[col_j]).corr(y))
+            drop_col = col_i if ci < cj else col_j
+            reason = f"keep higher |corr(y)| ({col_i}:{ci:.3f}, {col_j}:{cj:.3f})"
+        else:
+            ai = corr[col_i].mean()
+            aj = corr[col_j].mean()
+            if ai == aj:
+                vi, vj = X[col_i].var(), X[col_j].var()
+                drop_col = col_i if vi < vj else col_j
+                reason = f"tie -> drop lower var ({col_i}:{vi:.3g}, {col_j}:{vj:.3g})"
+            else:
+                drop_col = col_i if ai > aj else col_j
+                reason = f"drop higher mean-corr ({col_i}:{ai:.3f}, {col_j}:{aj:.3f})"
+
+        if verbose:
+            print(f"[{len(dropped)+1}] max|corr|={max_corr:.3f} between {col_i} & {col_j} -> drop {drop_col} ({reason})")
+
+        X.drop(columns=[drop_col], inplace=True, errors="ignore")
+        dropped.append(drop_col)
+
+    kept = X.columns.tolist()
+    if verbose:
+        print(f"Done. kept={len(kept)}, dropped={len(dropped)} (threshold={threshold}, method={method})")
+    return kept, dropped
