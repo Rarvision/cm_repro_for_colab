@@ -30,7 +30,7 @@ def main():
     print(f"   - after dropping first 12 columns: {df.shape}")
     print("   - first few columns now:\n", df.columns[:10])
 
-    # 3) 可选：按缺失率丢列 + 中位数填补
+    # 3) 按缺失率丢列 + 中位数填补
     if MISSING_COL_THRESHOLD is not None:
         miss_ratio = df_num.isna().mean()
         keep_cols = miss_ratio[miss_ratio <= MISSING_COL_THRESHOLD].index.tolist()
