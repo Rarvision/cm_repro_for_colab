@@ -11,7 +11,7 @@ from umap import UMAP
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 from sklearn.preprocessing import StandardScaler
-from extra_funcs import load_data, get_split
+from extra_funcs import load_data, get_split, iterative_corr_prune
 
 # Experiment configuration
 dataset = 'jarvis22'
@@ -24,14 +24,27 @@ os.makedirs(output_dir, exist_ok=True)
 # Load data
 df, X, y = load_data(dataset, target)
 
+index_train, index_test = get_split(df, group_label, group_value)
+
+kept_cols, dropped_cols = iterative_corr_prune(
+    X.loc[index_train],
+    y.loc[index_train],      # 有监督保留策略；若做无监督就传 None
+    threshold=0.7,           # 你的阈值
+    method="spearman",       # 对材料数据更鲁棒；需要严格线性可用 "pearson"
+    min_var=0.0,
+    verbose=True,
+)
+
+X_train = X.loc[index_train, kept_cols].copy()
+y_train = y.loc[index_train].copy()
+X_test  = X.loc[index_test,  kept_cols].copy()
+y_test  = y.loc[index_test].copy()
+
+print(f"最终用于建模的特征数: {X_train.shape[1]}（训练/测试列一致）")
+
 # Standardize features
 scaler = StandardScaler()
 X = pd.DataFrame(scaler.fit_transform(X), columns=X.columns, index=X.index)
-
-# Split data
-index_train, index_test = get_split(df, group_label, group_value)
-X_train, y_train = X.loc[index_train], y.loc[index_train]
-X_test, y_test = X.loc[index_test], y.loc[index_test]
 
 # UMAP dimensionality reduction
 umap = UMAP(n_components=2, n_neighbors=50, random_state=0)
