@@ -1,0 +1,46 @@
+cluster_id,n_features,total_freq,mean_of_means,top_features
+24,2,2263,2.6453346498548225,avg_dev local difference in Electronegativity; avg_dev local difference in CovalentRadius
+29,5,1918,2.32074185566837,minimum local difference in Electronegativity; minimum local difference in NpValence; minimum local difference in SpaceGroupNumber; minimum local difference in Column; minimum local difference in NsUnfilled
+23,2,1763,2.2237386606020593,avg_dev local difference in NpValence; avg_dev local difference in SpaceGroupNumber
+27,3,1562,2.954978600091376,avg_dev local difference in GSvolume_pa; MagpieData maximum GSvolume_pa; MagpieData avg_dev GSvolume_pa
+8,1,1517,2.3668113731731437,MagpieData mean Electronegativity
+7,3,1464,2.077580736307416,MagpieData minimum Column; MagpieData mean Column; MagpieData minimum MendeleevNumber
+20,2,1456,2.006957187197166,avg_dev local difference in MendeleevNumber; avg_dev local difference in Column
+28,2,566,2.665893000475182,minimum local difference in CovalentRadius; minimum local difference in GSvolume_pa
+15,2,547,3.321834350553628,MagpieData maximum CovalentRadius; MagpieData minimum GSbandgap
+5,2,544,2.274022752474938,avg_dev local difference in AtomicWeight; avg_dev local difference in NValence
+30,1,393,1.7615565240950288,MagpieData avg_dev Column
+45,1,393,1.491237471689864,compound possible
+18,2,387,2.6661892828294427,minimum neighbor distance variation; mean neighbor distance variation
+34,1,370,2.3368498162731863,range local difference in NfValence
+9,1,364,1.73759120315585,10-norm
+12,1,357,1.9558880000920371,MagpieData maximum MeltingT
+1,2,353,1.5837438361663776,MagpieData range NdValence; frac d valence electrons
+2,1,351,2.037382768042707,0-norm
+16,1,303,1.6636488086801358,MagpieData maximum AtomicWeight
+21,1,295,1.7397238422037462,avg_dev local difference in NdValence
+17,2,293,1.880514852962353,maximum CN_VoronoiNN; mean CN_VoronoiNN
+4,1,263,1.633531144883713,avg_dev CN_VoronoiNN
+6,1,247,1.852899539945661,MagpieData maximum NValence
+22,1,243,2.106171732081494,mean ordering parameter shell 1
+13,1,239,2.1976977728235756,avg_dev local difference in MeltingT
+25,4,234,2.37035240069818,minimum local difference in Row; minimum local difference in NdValence; minimum local difference in NfValence; minimum local difference in NValence
+3,1,206,2.4391281915400262,avg_dev neighbor distance variation
+10,1,203,5.22541724552886,MagpieData maximum SpaceGroupNumber
+43,1,139,1.6673818574038808,MagpieData mode NsValence
+26,1,128,2.069091198244608,MagpieData avg_dev Number
+32,2,127,2.619181281531952,avg_dev local difference in NUnfilled; MagpieData range NUnfilled
+11,2,121,2.3341420805451083,MagpieData avg_dev MeltingT; minimum local difference in MeltingT
+44,1,107,1.5958414081750656,MagpieData minimum NpUnfilled
+14,1,90,1.5018783429582627,MagpieData mean MeltingT
+38,1,85,1.516086784022727,MagpieData range NdUnfilled
+33,1,84,3.357637508647611,range local difference in NfUnfilled
+40,1,83,1.2135080355720045,MagpieData mode SpaceGroupNumber
+36,1,78,4.495567304932988,MagpieData mode GSbandgap
+42,1,78,3.0276606891925106,MagpieData mode NsUnfilled
+19,1,73,2.407161892086518,minimum local difference in GSbandgap
+35,1,52,1.2821646772145785,MagpieData mode Column
+41,1,46,2.137343726114883,MagpieData mean GSmagmom
+37,1,36,1.806476455459428,avg_dev local difference in NpUnfilled
+39,1,31,2.0869498591022846,MagpieData mean NpUnfilled
+31,1,24,1.8330088784965426,MagpieData mean GSvolume_pa

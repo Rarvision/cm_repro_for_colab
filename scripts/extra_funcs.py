@@ -14,7 +14,7 @@ from pymatgen.core import Composition
 import os
 
 
-def load_data(dataset, target):
+def load_data(dataset, target, root_path):
     """
     加载特征化数据，过滤无效值，添加元素属性。
 
@@ -29,7 +29,7 @@ def load_data(dataset, target):
     """
     # 打印当前工作目录和文件路径
     print(f"当前工作目录: {os.getcwd()}")
-    file_path = f'/content/cm_repro_for_colab/data/{dataset}/dat_featurized_matminer.pkl'
+    file_path = f'{root_path}/data/{dataset}/dat_featurized_matminer.pkl'
     print(f"尝试加载文件: {file_path}")
 
     # 读取特征化数据
@@ -38,7 +38,7 @@ def load_data(dataset, target):
     df = pd.read_pickle(file_path)
 
     # 读取 Matminer 特征标签
-    feature_file = '/content/cm_repro_for_colab/data/matminer_feature_labels.txt'
+    feature_file = f'{root_path}/data/matminer_feature_labels.txt'
     if not os.path.exists(feature_file):
         raise FileNotFoundError(f"特征标签文件 {feature_file} 不存在")
     with open(feature_file, 'r') as f:
